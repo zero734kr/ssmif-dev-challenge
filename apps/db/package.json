@@ -1,0 +1,9 @@
+{
+  "name": "@challenge/db",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "docker compose up",
+    "start": "docker compose up"
+  }
+}

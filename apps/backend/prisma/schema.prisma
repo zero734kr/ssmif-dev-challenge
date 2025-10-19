@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Symbol {
+  ticker    String   @unique
+  name      String?
+  type      String // stock, etf, crypto, forex, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prices Price[]
+
+  @@map("symbols")
+}
+
+model Price {
+  id           String   @id @default(cuid())
+  symbol       Symbol   @relation(fields: [ticker], references: [ticker], onDelete: Cascade)
+  ticker String
+  timestamp    DateTime
+  open         Float
+  high         Float
+  low          Float
+  close        Float
+  volume       Float
+  createdAt    DateTime @default(now())
+
+  @@unique([ticker, timestamp])
+  @@index([ticker, timestamp])
+  @@map("prices")
+}
