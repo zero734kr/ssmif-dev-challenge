@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+:root {
+  --background: oklch(90.555% 0.00644 255.732);
+  --foreground: oklch(32.182% 0.01657 270.868);
+
+  --background-2: #f3f3f3;
+  --background-3: #fff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-background-2: var(--background-2);
+  --color-background-3: var(--background-3);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(18.278% 0.0204 284.197);
+    --foreground: oklch(100% 0 0 / 85%);
+
+    --background-2: oklch(21.002% 0.02167 284.375);
+    --background-3: oklch(25.764% 0.02344 270.355);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    Roboto,
+    "Helvetica Neue",
+    "Segoe UI",
+    "Apple SD Gothic Neo",
+    "Noto Sans KR",
+    "Malgun Gothic",
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    sans-serif;
+}

@@ -21,11 +21,9 @@ export interface BacktestMetricsDto {
 }
 
 export interface TradeDto {
-  entryDate: Date;
-  exitDate?: Date;
+  orderedDate: Date;
   type: string;
-  entryPrice: number;
-  exitPrice?: number;
+  price: number;
   quantity: number;
   pnl?: number;
   pnlPercent?: number;
@@ -38,6 +36,7 @@ export interface BacktestResponseDto {
   range: BacktestRange;
   metrics: BacktestMetricsDto;
   trades: TradeDto[];
+  finalValue: number;
   equityCurve: EquityPointDto[];
 }
 

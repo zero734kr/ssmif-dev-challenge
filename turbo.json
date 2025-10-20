@@ -12,7 +12,8 @@
       ],
       "outputs": [
         ".next/**",
-        "!.next/cache/**"
+        "!.next/cache/**",
+        "dist/**"
       ],
       "passThroughEnv": [
         "SENTRY_AUTH_TOKEN"
@@ -29,6 +30,13 @@
       ]
     },
     "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": [
+        "build"
+      ],
       "cache": false,
       "persistent": true
     }

@@ -1,4 +1,4 @@
-import { BacktestRange, BacktestRequestDto, EquityPointDto, TradeDto } from '@challenge/dtos';
+import { BacktestRange, BacktestRequestDto, BacktestResponseDto, EquityPointDto, TradeDto } from '@challenge/dtos';
 import { BacktestEngine, Order, OrderType, SMACrossoverStrategy, StrategyState } from '@challenge/engine';
 import { Injectable } from '@nestjs/common';
 import { FinanceService } from 'src/finance/finance.service';
@@ -20,7 +20,7 @@ export class BacktestService {
   /**
    * Run a backtest with the given parameters
    */
-  async runBacktest({ ticker, range, strategy, initialCash, parameters }: BacktestRequestDto) {
+  async runBacktest({ ticker, range, strategy, initialCash, parameters }: BacktestRequestDto): Promise<BacktestResponseDto> {
     // Ensure data is ingested
     await this.ingester.ingest(ticker, range);
 
@@ -65,6 +65,7 @@ export class BacktestService {
       strategy,
       parameters,
       range,
+      finalValue: finalState.equity,
       metrics,
       trades,
       equityCurve
@@ -83,32 +84,28 @@ export class BacktestService {
       const order = orders[i];
 
       if (order.type === OrderType.BUY) {
-        // Look for the matching SELL order
-        const sellOrder = orders[i + 1];
-
+        // If it's a BUY order, just record it for now as we need to wait for SELL to calculate P&L
         tradesWithPnL.push({
-          entryDate: order.orderedAt,
-          exitDate: sellOrder?.orderedAt,
+          orderedDate: order.orderedAt,
           type: order.type,
-          entryPrice: order.price,
-          exitPrice: sellOrder?.price,
+          price: order.price,
           quantity: order.quantity,
-          pnl: sellOrder ? (sellOrder.price - order.price) * order.quantity : undefined,
-          pnlPercent: sellOrder ? (sellOrder.price - order.price) / order.price : undefined,
         });
       }
 
       if (order.type === OrderType.SELL) {
-        // SELL orders are already paired with previous BUY
-        // Just add the standalone SELL info if it exists without a BUY
-        if (i === 0 || orders[i - 1].type === OrderType.SELL) {
-          tradesWithPnL.push({
-            entryDate: order.orderedAt,
-            type: order.type,
-            entryPrice: order.price,
-            quantity: order.quantity,
-          });
-        }
+        // For SELL orders, find the matching BUY order to calculate P&L
+        const buyOrder = orders[i - 1];
+
+        tradesWithPnL.push({
+          orderedDate: order.orderedAt,
+          type: order.type,
+          price: order.price,
+          quantity: order.quantity,
+
+          pnl: buyOrder ? (order.price - buyOrder.price) * order.quantity : undefined,
+          pnlPercent: buyOrder ? (order.price - buyOrder.price) / buyOrder.price : undefined,
+        });
       }
     }
 
